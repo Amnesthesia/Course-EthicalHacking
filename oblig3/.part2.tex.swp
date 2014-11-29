@@ -1,0 +1,82 @@
+\section{Review: Rogue Code - A Jeff Aiken Novel}
+% Attacks described in the book
+	% Pass the Hash (pen. test) X
+	% Backdoor X
+	% Rootkit X
+		% Places itself in front of the line X
+		% Watches for bids & offers on specific stocks at certain prices, and takes percentage
+		% Routes money offshore
+	% Android Bluetooth Exploit ("pentest")
+	% Automated scan X
+	% Botnet X
+		% Drive-by download X
+		% Trojan via email X
+	% C&C servers X
+	% ZeroDays (Sold by FirstReact -> RedZoya ) X
+	% DoS (Bandeira vs rival gambling sites; botnet run by Abílio Ramos) X
+	% Trojan via email for ^ X
+
+% Tools used in the book 
+	% Rotorooter (Jeff's own tool) X
+	% 
+% Countermeasures? Tools/products for countermeasures?
+% What have to be done to clean up after the attack?
+	% Log tampering / hiding / disguising in noise
+% How likely is such an attack to succeed?
+
+% Which penetration tests performed? Why?
+	% Reconnaissance X
+	% Pass the Hash (log in, privilege escalation) X
+	% Backdoor X
+	% Social Engineering X
+% How?
+% Tools used? Other tools?
+% Tests not performed that should have been?
+% HFT:
+
+
+So, as the assignment was to read the book \textbf{Rogue Code: A Jeff Aiken Novel}, I admit to being rather hesitant to reading this book. However, after getting into it I quickly admitted to having judged the book too fast, and after I had begun I couldn't put the book down, it was just too darn good and I wish to express my biggest \textbf{thank you} to whoever made the decision that we should read this book: It's something I have missed so badly, to read a book with an actual storyline rather than just dry facts, but still keeps on topic. I really appreciate it!
+
+As for the book, though, it tells the story of Jeff Aiken, a former CIA officer who now runs his own security consultant company, RedZoya. A group of attackers perform reconnaissance against a Wall Street trading company, mapping their network and digging through documents. They manage to get a pretty good picture of the structure of the network, and by chance stumble upon an unpatched vulnerability in one of the jump servers, and manage to get in.
+
+
+% Doublecheck RedZoya, spelling, etc%
+
+RedZoya is hired to perform a penetration test after a "harmless" bot is found on one of the jump servers, and stumble upon a rootkit which Jeff begins reverse engineering, not knowing it's part of an ongoing operation by the Brazilian organized crime group Nosso Lugar, lead by \textit{chefe} Victor Bandeira and the operation being spearheaded by his son, Pedro, as part of his (partly unknowing) training. Pedro doesn't want to be a criminal, but wants to truly gets to know his father, whom he has been upset with since he divorced his mother - something seen as dishonorable in Brazil. Taking his mothers advice and putting the past behind him, he reconciles with his father and takes his suggestion of running his own company, Casa de Férias, which is also a shell company for infiltrating the New York Stock Exchange for a long time while planting code and preparing for the big heist against Toptical's IPO, Carnaval.
+
+Nosso Lugar's new leadership had seen the potential in computers early, and had hired Abílio Ramos as he had seen potential in him early. Ramos had helped Bandeira take control of their large online gambling sites, and Abílio had led \textit{Distributed Denial of Service} attacks against other large gambling sites with the \textit{botnets} they had built by infecting unsuspected users through \textit{drive-by downloads}, click-baiting (presumed from the mention of being \textit{penetrated by vulnerabilities in their web browser}), or \textit{trojans} sent as email attachments. Using these botnets, they could blackmail others into submission and eliminate competitors. These botnets also placed spyware on the target computers, allowing Nosso Lugar to loot bank accounts, and malware to distribute spam -- I believe Russinovich drew inspiration from the rise of exploit kits such as Zeus and BlackHole here. Russinovich uses \textbf{strong} real-world correlation and high technical correctness to make his story believable, rather than leaving it entirely to believable human interaction or depth in personality, which I feel is a great (but typical) techie-approach, and placing subtle undertones with criticism of certain (often 3 letter) agencies, by briefly mentioning PRISM and the relentless prosecution of Aaron Swartz. Toptical seems to correspond to rising competitors to Facebook focusing on privacy and ethics (Ello, diaspora*), and Brazil seems to be a substitution of Russia (perhaps to avoid yet another work making Russia the antagonist, as is again becoming increasingly common in this digital era cold war). 
+
+This is where the book gets interesting. Nosso Lugar have infiltrated the NYSE over half a decade by assigning their best technically, albeit not socially (considered he hired fellow NYSE sociopath colleague Richard Iyers as his partner), skilled employee Abílio undercover under direct management of the younger Bandeira, Pedro, to work with the digital infrastructure. Having worked for years, Abílio has gained more and more access to the infrastructure as a trusted employee under the name of Marc Campos, and has been able to infect the servers with Nosso Lugar's obfuscated code. 
+
+Jeff \& Frank, having been hired to perform a penetration test to see how this suspicious bot could have got into the NYSE jump servers, Jeff employ one of his own tools to create a map of the systems in the network from an unprivileged system, just like an attacker from the outside would've done. The book often mentions tools generically without calling them by name, and most tools are custom written by Jeff (Aikens being the Tony Stark of Information Security) - some being his private ones, and some publicly distributed at presentations.
+
+As Jeff developed an overview of the network, Frank went through the NYSE's intranet directory looking for public documents he could scan for information related to the jump servers. Just like the attackers who placed the bot there, he found some documents for the Universal Trading Platform containing names and accounts for the team deploying trading software to the engines in New Jersey. 
+
+Jeff \& Frank's reconnaissance of the sites, servers, antiviruses, user account and their roles had led them to realize the exchange's biggest customers had unnecessarily high permissions, and that the network was split in two -- one unprivileged untrusted zone, and one trusted zone not facing the internet where the action took place, with the two zones being connected by jump servers. 
+
+Jeff's company, RedZoya, purchased a lot of exploits from security research firm FirstReact, which was also the firm that had reported vulnerabilities, sold exploits for these vulnerabilities as soon as patches were released, further increasing the need to patch. One of these vulnerabilities had been left unpatched on the jump server, and as Jeff had access to the exploit, they were able to get a foothold on the jump server.
+
+These zones were accessed by logging into the jump server through an account with specific access to that zone; Jeff \& Frank thus proceeded to dig through access-logs for the specific jump server, to locate a frequent accessor. Having located this user, they used a Pass-the-Hash attack (considering this book was released in May 2014 and Russinovich held a presentation about PtH at RSA in February, I believe this was written as his personal creative expression of having worked a lot with this type of attack) -- using the cached hash of the users password to tag along with the user into the system. Policy was that users should never use privileged accounts to log in through these servers as it's a considerably high security risk, but as is often the case with policy, laziness wins in the users eyes and as such they were able to freeload into the system with higher-than-should've-been privileges.  
+
+This granted them administrative privileges on the \textit{insecure} network, but after performing reconnaissance of the administrator's computer they now had access to, and going through his documents and email, they could identify the log-in process to the jump server as two-factor requiring a physical device. Thus, they set up an alarm and waited for the administrator to make a connection to the jump server, and piggyback into it.
+
+After gaining access, they placed two backdoors (one as a back-up), and established a connection to the jump server from which they could further gain access to the trusted zone. Jeff began reverse engineering the obfuscated file hidden through the rootkit his private tool, \textit{Rotorooter}, had identified, but being driven by his own pride to show something amazing all at once, instead of showing progress step-by-step, he made a major mistake in failing to report the extent of his progress to their employer, Bill Stenton at the NYSE. This, as one may expect, lead to their major downfall later on, creating a lack of trust between Jeff \& Frank, and their employer. 
+
+
+Nosso Lugar begin to realize Jeff is onto them, and they take two different approaches to the problem. Richard Iyers turns out to be a loose cannon bordering on sociopath, and becomes seemingly uncontrolled - while the Brazilian infiltrator, Campos (Abílio), as a veteran in Nosso Lugar and with previous experience, gets pushed to take extreme measures by framing Jeff by planting code that makes obvious trade thefts regardless of the time of day doomed to be detected by the automated security system rapidly funneling the money straight into an account opened in Jeff's name using information retrieved by social engineering, the loose cannon (Iyers) is not as tactical and much more violently inclined, and instead makes an attempt at murdering Jeff.
+
+At the same time, the people at the largest fictional social network site Toptical is about to go public on the New York Stock Exchange, and although they have internal conflicts of whether to be acquired by one of the tech giants like Google, Microsoft, etc, or go public with the risk of their stocks being valued too high and risking High Frequency Traders (trading bots) messing the prices up, they have already settled on the decision to go public.
+
+This is where the book starts getting truly intriguing, and following the dramaturgical curve almost religiously, having performed the penetration test at around 25\% and introduced all major players but one, at around 33\% the U.S Securities and Exchange Comission, SEC, gets involved and is determined to put Jeff behind bars, shifting focus from attack and penetration testing, to Jeff \& Frank trying to clear his name and Nosso Lugar trying to pull off their big heist as Toptical goes public, skimming money off of specific stocks at specific prices, as their rogue code places itself in front of the line and getting the best prices first. Now the snowball that is the plot has been put in motion, culminating in Jeff \& Frank being on the run and Jeff's ex-wife and love-of-his-life Daryl (I wonder who Russinovich let get away?) is called in by Frank to help them clear their names. 
+
+As Frank \& Jeff flee the country under false identities (because breaking any law is okay by law enforcement as long as you're a good guy) to take the bait given to them by Nosso Lugar in the form of geo-embedded images containing coordinates and a threat, Daryl uses her insanely attractive looks to infiltrate the NYSE through social engineering - because apparently the NYSE has absolutely no useful safeguards against anybody determined to get in - and eventually identifies Campos as the culprit of the operation. She borrows his phone without permission and identifies a Bluetooth-vulnerability she knows she has been able to exploit before to unlock it, and copies all of his personal data off the phone (something which could have been prevented by updating firmware and Android), allowing her to provide Jeff \& Frank with more detailed information - but as the only woman of any importance in the book she ends up getting raped by the wildcard, Iyers. Luckily she's also a martial arts ninja (or at least trained in self-defense) and killed the rapist, with the local law enforcement unable to identify any suspects.
+
+Rogue Code very clearly defines the web of protagonists and antagonist, starting with Nosso Lugar vs NYSE, and then pitted against Jeff \& Frank; who in turn are later pitted against the SEC; Mitri Growth trying to profit off of Toptical. These different groups at first seem like different strings, but as the plot thickens they become more and more interweaved, the plot really thickening at around 50\% and culminating with a shoot-out at 85-90\%, after which the decline quickly follows with Jeff and Frank being cleared with the help from Jeff's ex-wife Daryl (to throw in a love story to carry all of this), Nosso Lugar's leader family being eliminated, the NYSE being saved \textit{just in time}, Mitri Growth profiting slightly while Toptical fails badly (presumably to prove the point of the problems with Wall Street, where those who contribute nothing may profit off of those who do) and Jeff and Daryl being reunited.
+
+An interesting point brought up by Russinovich in this Jeff Aiken novel is the High Frequency Traders. I was previously aware of automated trade bots, it comes as no surprise, but how they worked and to what extent they affect the global financial market was something I hadn't considered before. The fact that they can manipulate the market to almost fix prices by performing trades at insanely high speeds and profiting both when prices go up and down, and the volatility this brings, and the effect latency has on this, I never really stopped to consider; which brings me to further question reasons for the FCC wanting to allow ISPs to charge extra for high speed and prioritized internet traffic.
+
+As HFTs are automated and require no interaction, they could (can?) issue non-executable orders in batches, intended to detect early trends (or clog up the exchanges with noise). Eventually, you have machines that contribute nothing to the market but constantly take their cut from trades, their only contribution being a new algorithm - money disappearing into somebody else's pockets for nothing.
+
+
+ 
+
